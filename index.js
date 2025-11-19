@@ -39,7 +39,7 @@ async function handleRequest(request) {
 
         const { data, error } = await supabase
             .from('egresos')
-            .insert([{ monto, descripcion, fecha }]);
+            .insert([{ monto : monto, descripcion : descripcion, fecha : fecha }]);
 
         if (error) {
             return new Response(JSON.stringify({ error: error.message }), {
