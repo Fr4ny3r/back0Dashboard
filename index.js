@@ -35,11 +35,11 @@ async function handleRequest(request) {
     }
     if (url.pathname === '/api/egresos' && request.method === 'POST') {
         const requestBody = await request.json();
-        const { monto, descripcion, fecha } = requestBody;
+        const { id, monto, descripcion, fecha } = requestBody;
 
         const { data, error } = await supabase
             .from('egresos')
-            .insert([{ monto : monto, descripcion : descripcion, fecha : fecha }]);
+            .insert([{ id : id, monto : monto, descripcion : descripcion, fecha : fecha }]);
 
         if (error) {
             return new Response(JSON.stringify({ error: error.message }), {
