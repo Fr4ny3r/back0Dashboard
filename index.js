@@ -33,6 +33,33 @@ async function handleRequest(request) {
             headers: headers
         });
     }
+    if (url.pathname === '/api/egresos' && request.method === 'POST') {
+        const requestBody = await request.json();
+        const { monto, descripcion, fecha } = requestBody;
+
+        const { data, error } = await supabase
+            .from('egresos')
+            .insert([{ monto, descripcion, fecha }]);
+
+        if (error) {
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        const headers = { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*', 
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        };
+
+        return new Response(JSON.stringify(data), {
+            status: 201,
+            headers: headers
+        });
+    }
 
     // Manejar el pre-flight de CORS (si tu Worker recibe OPTIONS)
     if (request.method === 'OPTIONS') {
