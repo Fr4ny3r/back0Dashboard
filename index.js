@@ -49,31 +49,45 @@ async function handleRequest(request) {
     if (url.pathname === '/api/egresos' && request.method === 'POST') {
         try {
             const requestBody = await request.json();
-            // Asegúrate de que las propiedades del cuerpo coincidan con las de tu tabla.
-            // Si ID es autogenerado por Supabase, NO lo incluyas en la inserción.
+            
+            // Asumiendo que has quitado 'id' si es autogenerado:
             const { monto, descripcion, fecha } = requestBody; 
 
+            // ----------------------------------------------------
+            // El error 500 ocurre si el objeto de inserción es inválido
+            // ----------------------------------------------------
             const { data, error } = await supabase
                 .from('egresos')
-                .insert([ { monto, descripcion, fecha } ]) // Quitamos 'id' si es autogenerado
+                .insert([ { monto, descripcion, fecha } ])
                 .select();
 
             if (error) {
-                return new Response(JSON.stringify({ error: error.message }), {
-                    status: 500,
-                    headers: JSON_HEADERS // Usamos el header combinado
+                // Este es el manejador de error de la BD
+                console.error("Error de Supabase:", error);
+                // IMPORTANTE: Devolver 400 Bad Request si el usuario envió datos malos
+                return new Response(JSON.stringify({ 
+                    error: "Fallo al insertar datos", 
+                    details: error.message 
+                }), {
+                    status: 400, // Error de cliente (Bad Request)
+                    headers: JSON_HEADERS
                 });
             }
-
+            
+            // Éxito
             return new Response(JSON.stringify(data), {
-                status: 201, // 201 Created
-                headers: JSON_HEADERS // Usamos el header combinado
+                status: 201, // Created
+                headers: JSON_HEADERS
             });
             
         } catch (e) {
-            // Maneja el error si request.json() falla o si hay otro error inesperado
-            return new Response(JSON.stringify({ error: "Error al procesar la solicitud", details: e.message }), {
-                status: 400, // 400 Bad Request
+            // Maneja errores de request.json() o errores internos de Node/Worker
+            console.error("Error Worker interno/JSON:", e);
+            return new Response(JSON.stringify({ 
+                error: "Error interno del Worker", 
+                details: e.message 
+            }), {
+                status: 500,
                 headers: JSON_HEADERS
             });
         }
