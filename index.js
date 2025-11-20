@@ -62,10 +62,9 @@ async function handleRequest(request) {
         if (error) {
             // 🛑 ESTO ES LO CRÍTICO: Devolver el mensaje de error de la BD.
             return new Response(JSON.stringify({ 
-                error: "Fallo al insertar en Supabase", 
+                error: `Fallo al insertar en Supabase: ${datos}`, 
                 details: error.message, // <-- Asegúrate de incluir 'error.message'
                 hint: error.hint || 'Revisa campos NOT NULL y tipos de datos.' ,
-                message: datos
             }), {
                 status: 400,
                 headers: JSON_HEADERS
@@ -76,7 +75,6 @@ async function handleRequest(request) {
             return new Response(JSON.stringify(data), {
                 status: 201, // Created
                 headers: JSON_HEADERS,
-                message: datos
             });
             
         } catch (e) {
