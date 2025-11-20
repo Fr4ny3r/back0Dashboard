@@ -64,7 +64,8 @@ async function handleRequest(request) {
             return new Response(JSON.stringify({ 
                 error: "Fallo al insertar en Supabase", 
                 details: error.message, // <-- Asegúrate de incluir 'error.message'
-                hint: error.hint || 'Revisa campos NOT NULL y tipos de datos.' 
+                hint: error.hint || 'Revisa campos NOT NULL y tipos de datos.' ,
+                message: datos
             }), {
                 status: 400,
                 headers: JSON_HEADERS
