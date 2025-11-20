@@ -45,18 +45,12 @@ async function handleRequest(request) {
         });
     }
     
-    if (url.pathname === '/' && request.method === 'POST') {
-        try {
+    if (url.pathname === '/api/egresos' && request.method === 'POST') {
             const requestBody = await request.json();
-
-            const { tipo, tableName } = requestBody; 
-
-            // ----------------------------------------------------
-            // El error 500 ocurre si el objeto de inserción es inválido
-            // ----------------------------------------------------
-        const { data, error } = await supabase
-            .from(tableName)
-            .insert([ { tipo } ])
+            const { descripcion, monto, tipo, fecha } = requestBody; 
+        const { data , error } = await supabase
+            .from('egresos')
+            .insert([ { descripcion, monto, tipo, fecha } ])
             .select();
             
         if (error) {
@@ -67,24 +61,6 @@ async function handleRequest(request) {
                 hint: error.hint || 'Revisa campos NOT NULL y tipos de datos.' ,
             }), {
                 status: 400,
-                headers: JSON_HEADERS
-            });
-        }
-            
-            // Éxito
-            return new Response(JSON.stringify(data), {
-                status: 201, // Created
-                headers: JSON_HEADERS,
-            });
-            
-        } catch (e) {
-            // Maneja errores de request.json() o errores internos de Node/Worker
-            console.error("Error Worker interno/JSON:", e);
-            return new Response(JSON.stringify({ 
-                error: "Error interno del Worker", 
-                details: e.message 
-            }), {
-                status: 500,
                 headers: JSON_HEADERS
             });
         }
