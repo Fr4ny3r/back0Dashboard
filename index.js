@@ -49,7 +49,7 @@ async function handleRequest(request) {
     if (url.pathname === '/' && request.method === 'POST') {
         try {
             const requestBody = await request.json();
-            
+            console.log("Request Body recibido:", requestBody);
             // Asumiendo que has quitado 'id' si es autogenerado:
             const { monto, descripcion, fecha } = requestBody; 
 
