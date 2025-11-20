@@ -17,6 +17,9 @@ const JSON_HEADERS = {
 
 async function handleRequest(request) {
     const url = new URL(request.url);
+    const urlSegments = url.pathname.split('/'); // -> ['', 'api', 'egresos', '123']
+    const resource = urlSegments[2]; // 'egresos'
+    const idToDelete = urlSegments[3]; // '123'
 
     // --- MANEJO DE OPTIONS (PRE-FLIGHT) ---
     if (request.method === 'OPTIONS') {
@@ -66,13 +69,15 @@ async function handleRequest(request) {
         }
     }
     
-    if (url.pathname === '/api/egresos' && request.method === 'DELETE') {
-        const requestBody = await request.json();
-        const { id } = requestBody;
+    if (resource === 'egresos' && request.method === 'DELETE' && idToDelete) {
+        
+        if (!idToDelete || isNaN(parseInt(idToDelete))) {
+        return new Response(JSON.stringify({ error: "ID inválido o faltante." }), { status: 400, headers: JSON_HEADERS });
+        }
         const { data, error } = await supabase
             .from('egresos')
             .delete()
-            .eq('id', id);
+            .eq('id', idToDelete);
         
         if (error) {
             return new Response(JSON.stringify({ error: error.message }), {
