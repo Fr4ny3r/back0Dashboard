@@ -45,20 +45,18 @@ async function handleRequest(request) {
         });
     }
     
-    // --- POST /api/egresos ---
     if (url.pathname === '/' && request.method === 'POST') {
         try {
             const requestBody = await request.json();
-            console.log("Request Body recibido:", requestBody);
-            // Asumiendo que has quitado 'id' si es autogenerado:
-            const { monto, descripcion, fecha, tipo } = requestBody; 
+
+            const { datos, tableName } = requestBody; 
 
             // ----------------------------------------------------
             // El error 500 ocurre si el objeto de inserción es inválido
             // ----------------------------------------------------
         const { data, error } = await supabase
-            .from('egresos')
-            .insert([ { monto, descripcion, fecha, tipo } ])
+            .from(tableName)
+            .insert([ { datos } ])
             .select();
 
         if (error) {
@@ -76,7 +74,8 @@ async function handleRequest(request) {
             // Éxito
             return new Response(JSON.stringify(data), {
                 status: 201, // Created
-                headers: JSON_HEADERS
+                headers: JSON_HEADERS,
+                message: datos
             });
             
         } catch (e) {
