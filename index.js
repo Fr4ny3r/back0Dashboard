@@ -51,14 +51,14 @@ async function handleRequest(request) {
             const requestBody = await request.json();
             console.log("Request Body recibido:", requestBody);
             // Asumiendo que has quitado 'id' si es autogenerado:
-            const { monto, descripcion, fecha } = requestBody; 
+            const { monto, descripcion, fecha, tipo } = requestBody; 
 
             // ----------------------------------------------------
             // El error 500 ocurre si el objeto de inserción es inválido
             // ----------------------------------------------------
         const { data, error } = await supabase
             .from('egresos')
-            .insert([ { monto, descripcion, fecha } ])
+            .insert([ { monto, descripcion, fecha, tipo } ])
             .select();
 
         if (error) {
