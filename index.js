@@ -43,7 +43,9 @@ async function handleRequest(request) {
             status: 200,
             headers: JSON_HEADERS // Usamos el header combinado
         });
-    } else if (request.method === 'POST') {
+    }
+    
+    if (url.pathname === '/api/egresos' && request.method === 'POST') {
             const requestBody = await request.json();
             const { descripcion, monto, tipo, fecha } = requestBody; 
         const { data , error } = await supabase
@@ -54,7 +56,7 @@ async function handleRequest(request) {
         if (error) {
             // 🛑 ESTO ES LO CRÍTICO: Devolver el mensaje de error de la BD.
             return new Response(JSON.stringify({ 
-                error: `Fallo al insertar en Supabase: ${tipo}`, 
+                error: `Fallo al insertar en Supabase`, 
                 details: error.message, // <-- Asegúrate de incluir 'error.message'
                 hint: error.hint || 'Revisa campos NOT NULL y tipos de datos.' ,
             }), {
@@ -62,7 +64,9 @@ async function handleRequest(request) {
                 headers: JSON_HEADERS
             });
         }
-    }else if (request.method === 'DELETE') {
+    }
+    
+    if (url.pathname === '/api/egresos' && request.method === 'DELETE') {
         const requestBody = await request.json();
         const { id } = requestBody;
         const { data, error } = await supabase
