@@ -43,9 +43,7 @@ async function handleRequest(request) {
             status: 200,
             headers: JSON_HEADERS // Usamos el header combinado
         });
-    }
-    
-    if (url.pathname === '/api/egresos' && request.method === 'POST') {
+    } else if (request.method === 'POST') {
             const requestBody = await request.json();
             const { descripcion, monto, tipo, fecha } = requestBody; 
         const { data , error } = await supabase
@@ -64,7 +62,27 @@ async function handleRequest(request) {
                 headers: JSON_HEADERS
             });
         }
+    }else if (request.method === 'DELETE') {
+        const requestBody = await request.json();
+        const { id } = requestBody;
+        const { data, error } = await supabase
+            .from('egresos')
+            .delete()
+            .eq('id', id);
+        
+        if (error) {
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 500,
+                headers: JSON_HEADERS
+            });
+        }
+
+        return new Response(JSON.stringify({ message: 'Egreso eliminado', data }), {
+            status: 200,
+            headers: JSON_HEADERS
+        });
     }
+
 
     return new Response('Ruta no encontrada', { status: 404, headers: JSON_HEADERS });
 }
