@@ -56,9 +56,9 @@ async function handleRequest(request) {
             // ----------------------------------------------------
         const { data, error } = await supabase
             .from(tableName)
-            .insert([ { datos } ])
+            .insert([ { tipo } ])
             .select();
-
+            
         if (error) {
             // 🛑 ESTO ES LO CRÍTICO: Devolver el mensaje de error de la BD.
             return new Response(JSON.stringify({ 
