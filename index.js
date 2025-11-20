@@ -49,7 +49,7 @@ async function handleRequest(request) {
         try {
             const requestBody = await request.json();
 
-            const { datos, tableName } = requestBody; 
+            const { tipo, tableName } = requestBody; 
 
             // ----------------------------------------------------
             // El error 500 ocurre si el objeto de inserción es inválido
@@ -62,7 +62,7 @@ async function handleRequest(request) {
         if (error) {
             // 🛑 ESTO ES LO CRÍTICO: Devolver el mensaje de error de la BD.
             return new Response(JSON.stringify({ 
-                error: `Fallo al insertar en Supabase: ${datos}`, 
+                error: `Fallo al insertar en Supabase: ${tipo}`, 
                 details: error.message, // <-- Asegúrate de incluir 'error.message'
                 hint: error.hint || 'Revisa campos NOT NULL y tipos de datos.' ,
             }), {
