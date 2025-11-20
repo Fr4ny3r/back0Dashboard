@@ -46,7 +46,7 @@ async function handleRequest(request) {
     }
     
     // --- POST /api/egresos ---
-    if (url.pathname === '/api/egresos' && request.method === 'POST') {
+    if (url.pathname === '/' && request.method === 'POST') {
         try {
             const requestBody = await request.json();
             
@@ -56,23 +56,22 @@ async function handleRequest(request) {
             // ----------------------------------------------------
             // El error 500 ocurre si el objeto de inserción es inválido
             // ----------------------------------------------------
-            const { data, error } = await supabase
-                .from('egresos')
-                .insert([ { monto, descripcion, fecha } ])
-                .select();
+        const { data, error } = await supabase
+            .from('egresos')
+            .insert([ { monto, descripcion, fecha } ])
+            .select();
 
-            if (error) {
-                // Este es el manejador de error de la BD
-                console.error("Error de Supabase:", error);
-                // IMPORTANTE: Devolver 400 Bad Request si el usuario envió datos malos
-                return new Response(JSON.stringify({ 
-                    error: "Fallo al insertar datos", 
-                    details: error.message 
-                }), {
-                    status: 400, // Error de cliente (Bad Request)
-                    headers: JSON_HEADERS
-                });
-            }
+        if (error) {
+            // 🛑 ESTO ES LO CRÍTICO: Devolver el mensaje de error de la BD.
+            return new Response(JSON.stringify({ 
+                error: "Fallo al insertar en Supabase", 
+                details: error.message, // <-- Asegúrate de incluir 'error.message'
+                hint: error.hint || 'Revisa campos NOT NULL y tipos de datos.' 
+            }), {
+                status: 400,
+                headers: JSON_HEADERS
+            });
+        }
             
             // Éxito
             return new Response(JSON.stringify(data), {
