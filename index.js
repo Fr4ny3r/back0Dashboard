@@ -92,6 +92,33 @@ async function handleRequest(request) {
         });
     }
 
+    if (url.pathname === '/api/egresos' && request.method === 'PUT') {
+        const requestBody = await request.json();
+        const { id, descripcion, monto, tipo, fecha } = requestBody;
+
+        if (!id) {
+            return new Response(JSON.stringify({ error: "ID es requerido para actualizar." }), { status: 400, headers: JSON_HEADERS });
+        }
+
+        const { data, error } = await supabase
+            .from('egresos')
+            .update({ descripcion, monto, tipo, fecha })
+            .eq('id', id)
+            .select();
+
+        if (error) {
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 500,
+                headers: JSON_HEADERS
+            });
+        }
+
+        return new Response(JSON.stringify({ message: 'Egreso actualizado', data }), {
+            status: 200,
+            headers: JSON_HEADERS
+        });
+    }
+
 
     return new Response('Ruta no encontrada', { status: 404, headers: JSON_HEADERS });
 }
